@@ -7,9 +7,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.NumberPicker;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 public class UpdateActivity extends ActionBarActivity {
@@ -45,14 +48,107 @@ public class UpdateActivity extends ActionBarActivity {
 
     public void functionUpdateSettings(View v)
     {
-        HashMap<String,String> day1 = new HashMap<String,String>();
-        HashMap<String,String> day2 = new HashMap<String,String>();
-        HashMap<String,String> day3 = new HashMap<String,String>();
-
         NumberPicker np = (NumberPicker)v.findViewById(R.id.numberPicker);
-        for(int D=np.getValue(); D>0; D--)
-        {
+        int npVals=np.getValue();
+        HashMap<String,String>[] days = new HashMap[np.getValue()];
+        days[0].put("9898989898","13");
+        days[0].put("8787878787","15");
+        days[0].put("7676767676", "18");
 
+        days[1].put("9898989898", "13");
+        days[1].put("7676767676", "18");
+
+        days[2].put("9898989898", "13");
+        days[2].put("8787878787", "15");
+        days[2].put("7676767676", "21");
+        Iterator it = days[npVals-1].entrySet().iterator();
+        ArrayList<String> passed = new ArrayList<String>();
+        while(it.hasNext())
+        {
+            Map.Entry E = (Map.Entry)it.next();
+            String key = (String) E.getKey();
+            String val = (String) E.getValue();
+            boolean flagVal = false;
+            for(int d=npVals-2;d>-1;d++)
+            {
+                HashMap<String,String> tempDay = days[d];
+                if(tempDay.containsKey(key))
+                {
+                    String tempVal = tempDay.get(key);
+                    if(tempVal.equals(val)){
+                       flagVal = true;
+                       continue;
+                    }
+                }
+                else{
+                    flagVal = false;
+                    break;
+                }
+            }
+            if (flagVal)
+            {
+                passed.add(key);
+            }
         }
     }
-}
+}/*
+import java.util.ArrayList;
+        import java.util.HashMap;
+        import java.util.Iterator;
+        import java.util.Map;
+
+
+public class mc{
+    public static void main(String a[]){
+        //NumberPicker np = (NumberPicker)v.findViewById(R.id.numberPicker);
+        int npVals=2;
+        HashMap<String,String>[] days = new HashMap[npVals+1];
+        for(int j=0;j<=npVals;j++)
+            days[j]= new HashMap<String,String>();
+        days[0].put("9898989898","13");
+        days[0].put("8787878787","15");
+        days[0].put("7676767676", "18");
+
+        days[1].put("9898989898", "13");
+        days[1].put("7676767676", "18");
+
+        days[2].put("9898989898", "13");
+        days[2].put("8787878787", "15");
+        days[2].put("7676767676", "21");
+        Iterator it = days[npVals-1].entrySet().iterator();
+        ArrayList<String> passed = new ArrayList<String>();
+        while(it.hasNext())
+        {
+            Map.Entry E = (Map.Entry)it.next();
+            String key = (String) E.getKey();
+            String val = (String) E.getValue();
+            boolean flagVal = false;
+            for(int d=npVals;d>-1;d--)
+            {
+                HashMap<String,String> tempDay = days[d];
+                if(tempDay.containsKey(key))
+                {
+                    String tempVal = tempDay.get(key);
+                    if(tempVal.equals(val)){
+                        flagVal = true;
+                        continue;
+                    }
+                    else
+                    {
+                        flagVal=false;
+                        break;
+                    }
+                }
+                else{
+                    flagVal = false;
+                    break;
+                }
+            }
+            if (flagVal)
+            {
+                passed.add(key);
+            }
+        }
+        System.out.println(" passed = "+passed.toString());
+    }
+}*/
