@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.reflect.Array;
@@ -25,6 +26,7 @@ public class UpdateActivity extends ActionBarActivity {
 
     NumberPicker np;
     String msg = "";
+    TextView op;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +35,8 @@ public class UpdateActivity extends ActionBarActivity {
         np = (NumberPicker) findViewById(R.id.np1);
         np.setMaxValue(3);
         np.setMinValue(1);
+        op = (TextView) findViewById(R.id.outputView);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -45,34 +47,48 @@ public class UpdateActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     public void functionUpdateSettings(View v) {
 
+        //initializations
         int npVals = np.getValue();
+        int currentDay =Calendar.getInstance().get(Calendar.DAY_OF_MONTH); //today's date
         HashMap<String, Long>[] days = new HashMap[npVals + 1];
         for (int j = 0; j <= npVals; j++)
             days[j] = new HashMap<String, Long>();
+
+        //get call logs and place in respective days[] array
         Cursor logPointer = getContentResolver().query(CallLog.Calls.CONTENT_URI, null, null, null, null);
         while (logPointer.moveToNext()) {
             String number = logPointer.getString(logPointer.getColumnIndex(CallLog.Calls.NUMBER));
             long timeMils = Long.parseLong(logPointer.getString(logPointer.getColumnIndex(CallLog.Calls.DATE)));
             Calendar c1 = Calendar.getInstance();
             c1.setTimeInMillis(timeMils);
-            Log.i("Cols:-----------", "Number: " + number + " Time: " + c1.getTime());
+            int logDay =c1.get(Calendar.DAY_OF_MONTH); //date from call log entry
+            int varDiff =(currentDay-logDay);
+            if(varDiff < npVals) {
+                for (int i = 0; i < npVals; i++) {
+                    if (varDiff == i) {
+                        days[i].put(number, timeMils);
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+            for (String iKey : days[0].keySet()) {
+                op.append("Time : "+days[0].get(iKey)+"No. "+iKey);
+            }
+
         }
-        Iterator it = days[npVals - 1].entrySet().iterator();
+        /*Iterator it = days[npVals - 1].entrySet().iterator();
         ArrayList<String> passed = new ArrayList<String>();
         while (it.hasNext()) {
             Map.Entry E = (Map.Entry) it.next();
@@ -98,9 +114,7 @@ public class UpdateActivity extends ActionBarActivity {
             if (flagVal) {
                 passed.add(key);
             }
-        }
-        System.out.println(" passed = " + passed.toString());
-
+        }*/
     }
 }
  /*
