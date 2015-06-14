@@ -58,9 +58,9 @@ public class UpdateActivity extends ActionBarActivity {
 
         //initializations
         int npVals = np.getValue();
-        int currentDay =Calendar.getInstance().get(Calendar.DAY_OF_MONTH); //today's date
-        HashMap<String, Long>[] days = new HashMap[npVals + 1];
-        for (int j = 0; j <= npVals; j++)
+        long currentMils = System.currentTimeMillis();
+        HashMap<String, Long>[] days = new HashMap[npVals];
+        for (int j = 0; j < npVals; j++)
             days[j] = new HashMap<String, Long>();
 
         //get call logs and place in respective days[] array
@@ -68,25 +68,22 @@ public class UpdateActivity extends ActionBarActivity {
         while (logPointer.moveToNext()) {
             String number = logPointer.getString(logPointer.getColumnIndex(CallLog.Calls.NUMBER));
             long timeMils = Long.parseLong(logPointer.getString(logPointer.getColumnIndex(CallLog.Calls.DATE)));
-            Calendar c1 = Calendar.getInstance();
+            /*Calendar c1 = Calendar.getInstance();
             c1.setTimeInMillis(timeMils);
-            int logDay =c1.get(Calendar.DAY_OF_MONTH); //date from call log entry
-            int varDiff =(currentDay-logDay);
-            if(varDiff < npVals) {
+            int logDay = c1.get(Calendar.DAY_OF_MONTH); //date from call log entry
+            int varDiff = (currentDay - logDay);*/
+            long diffDay = (currentMils - timeMils)/86400000;
+            if (diffDay < npVals) {
                 for (int i = 0; i < npVals; i++) {
-                    if (varDiff == i) {
+                    if (diffDay>0 && diffDay<24) {
                         days[i].put(number, timeMils);
                     }
                 }
             }
-            else
-            {
-                break;
-            }
-            for (String iKey : days[0].keySet()) {
-                op.append("Time : "+days[0].get(iKey)+"No. "+iKey);
-            }
-
+        }
+        for (String iKey : days[2].keySet()) {
+            op.append("Time : " + days[2].get(iKey) + "No. " + iKey);
+            Log.i("--OP--", "Time : " + days[2].get(iKey) + "No. " + iKey);
         }
         /*Iterator it = days[npVals - 1].entrySet().iterator();
         ArrayList<String> passed = new ArrayList<String>();
